@@ -1,0 +1,9 @@
+"0","file = ""~/code/stat324/mobile data/WALKING.csv"""
+"0","data = read.csv(file,header=TRUE)"
+"2","Warning in file(file, ""rt"") :"
+"2","
+ "
+"2"," cannot open file '/Users/ayujprasad/code/stat324/mobile data/WALKING.csv': No such file or directory
+"
+"2","Error in file(file, ""rt"") : cannot open the connection
+"

@@ -1,0 +1,64 @@
+---
+title: "Lab9_code"
+author: "Ayuj Prasad"
+date: "02/12/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## To Count Number of Steps in WALKING.csv
+
+```{r}
+myData <- read.csv("WALKING.csv", header=T)
+
+accel_z <- myData$smooth_accel_z
+peaks <- IDPmisc::peaks(accel_z)
+peakWidths <- peaks$w
+mu <- mean(peakWidths)
+SD <- sd(peakWidths)
+minPw <- mu - 0.64*SD
+threshold = mean(accel_z)
+steps <- IDPmisc::peaks(accel_z,minPW = minPw,thr = threshold)
+sprintf("Steps: %i", length(steps$x))
+```
+
+## To Count Number of Turns in TURNING.csv
+
+```{r}
+myData <- read.csv("TURNING.csv", header=T)
+
+gyro_z <- myData$smooth_gyro_z
+threshold = mean(gyro_z)
+clockwise <- IDPmisc::peaks(gyro_z,minPH = 2,thr = threshold)
+counter_clockwise <- IDPmisc::peaks(-gyro_z,minPH = 2,thr = threshold)
+total = length(clockwise$x) + length(counter_clockwise$x)
+sprintf("Turns: %i", total)
+```
+
+## To Combine algorithms from above to count number of steps and turns in the path walked in WALKING_AND_TURNING.csv
+
+```{r}
+myData <- read.csv("WALKING_AND_TURNING.csv", header=T)
+
+accel_z <- myData$smooth_accel_z
+peaks <- IDPmisc::peaks(accel_z)
+peakWidths <- peaks$w
+mu <- mean(peakWidths)
+SD <- sd(peakWidths)
+minPw <- mu - 0.64*SD
+threshold = mean(accel_z)
+steps <- IDPmisc::peaks(accel_z,minPW = minPw,thr = threshold)
+sprintf("Steps: %i", length(steps$x))
+
+gyro_z <- myData$smooth_gyro_z
+threshold = mean(gyro_z)
+clockwise <- IDPmisc::peaks(gyro_z,minPH = 2,thr = threshold)
+counter_clockwise <- IDPmisc::peaks(-gyro_z,minPH = 2,thr = threshold)
+total = length(clockwise$x) + length(counter_clockwise$x)
+sprintf("Turns: %i", total)
+```
+
+

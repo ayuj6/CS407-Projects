@@ -1,0 +1,50 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+I decided that I would be counting the number of peaks in the accelerometer z-data to determine how many steps are taken. 
+
+The smoothing method applied was EWMA using an alpha of 0.1
+
+```{r}
+file = "~/code/stat324/mobile data/WALKING.csv"
+data = read.csv(file,header=TRUE)
+
+smooth_z = data$smooth_accel_z
+
+rawPeaks = IDPmisc::peaks(smooth_z)
+
+widths = rawPeaks$w
+minWidth = mean(widths) - 1.4*sd(widths)
+
+peakData = IDPmisc::peaks(smooth_z,minPW = minWidth,thr = mean(smooth_z))
+length(peakData$x)
+```
+
+We are discarding peaks with unusually small 'widths' meaning they occurred to soon to possibly be a new step. The exact number that I determined to use as a discard cut-off I guess and checked until the output number was 38, as expected.
+
+
+Now we can run this over the data in question to take a guess at how many steps were taken there.
+
+```{r}
+file = "~/code/stat324/mobile data/WALKING_AND_TURNING.csv"
+data = read.csv(file,header=TRUE)
+
+
+rawPeaks = IDPmisc::peaks(data$smooth_accel_z)
+
+widths = rawPeaks$w
+minWidth = mean(widths) - 1.4*sd(widths)
+
+peakData = IDPmisc::peaks(smooth_z,minPW = minWidth,thr = mean(smooth_z))
+length(peakData$x)
+```
+
+35 steps seems like a reasonable guess.
+
+As for turning, it seems like mag_y and gyro_z (and their smoothed versions) give the best insight into the direction the phone is facing. Moving clockwise degrees shows an upwards spike in gyro_z and a drop in mag_y. Notably the mag_y value seems to wrap around from -20 to 20 when going CW and vice versa CCW.
+
+Visually inspecting WALKING_AND_TURNING looks like the person walked in one direction about a quarter of the time, turned one direction and walked another quarter, did a 180 degree turn and walked another quarter, then turned the same direction as the second turn and finished the rest of the walking. See path.png for what my guess looks like.
+
+
